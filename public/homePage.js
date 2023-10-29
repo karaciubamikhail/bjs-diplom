@@ -63,25 +63,25 @@ moneymanagers.sendMoneyCallback = (data) =>{
     })
 }
 
-let Favorites = new FavoritesWidget();
+let favorites = new FavoritesWidget();
 
 
 
 ApiConnector.getFavorites (response =>{
     if(response.success){
         console.log(response);
-        Favorites.clearTable();
-        Favorites.fillTable(response.data);
+        favorites.clearTable();
+        favorites.fillTable(response.data);
         moneymanagers.updateUsersList(response.data);
     }
 });
-Favorites.addUserCallback = (data) =>{
+favorites.addUserCallback = (data) =>{
     ApiConnector.addUserToFavorites(data,(response)=>{
         if(response.success){
-            Favorites.clearTable();
-            Favorites.fillTable(response.data);
+            favorites.clearTable();
+            favorites.fillTable(response.data);
             moneymanagers.updateUsersList(response.data);
-            Favorites.setMessage(response.success, `Пользователь ${data.name} добавлен в избранные`);
+            favorites.setMessage(response.success, `Пользователь ${data.name} добавлен в избранные`);
         }
         else {
             moneymanagers.setMessage(response.success, response.error);
@@ -89,13 +89,13 @@ Favorites.addUserCallback = (data) =>{
     })
 }
 
-Favorites.removeUserCallback = (data) =>{
+favorites.removeUserCallback = (data) =>{
     ApiConnector.removeUserFromFavorites(data, (response)=>{
         if(response.success){
-            Favorites.clearTable();
-            Favorites.fillTable(response.data);
+            favorites.clearTable();
+            favorites.fillTable(response.data);
             moneymanagers.updateUsersList(response.data);
-            Favorites.setMessage(response.success, `Пользователь c ID ${data} удален из избранных`);
+            favorites.setMessage(response.success, `Пользователь c ID ${data} удален из избранных`);
             console.log(data);
         }
         else {
