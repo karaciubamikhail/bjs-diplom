@@ -1,5 +1,5 @@
-let log = new LogoutButton();
-log.action = () => {
+let logoutbtn = new LogoutButton();
+logoutbtn.action = () => {
     ApiConnector.logout(callback => {
         if (callback.success) {
             location.reload();
@@ -13,13 +13,13 @@ ApiConnector.current(response=>{
     }
 })
 
-let curs = new RatesBoard();
+let rateboard = new RatesBoard();
 
 function cursset (){
     ApiConnector.getStocks(data=>{
         if(data.success){
-            curs.clearTable();
-            curs.fillTable(data.data);
+            rateboard.clearTable();
+            rateboard.fillTable(data.data);
         }
     })
 }
@@ -27,34 +27,38 @@ cursset ();
 setInterval(cursset, 60000);
 
 
-let man = new MoneyManager();
+let moneymanagers = new MoneyManager();
 
-man.addMoneyCallback = (data) =>{
+moneymanagers.addMoneyCallback = (data) =>{
     ApiConnector.addMoney(data, (response) => {
         if(response.success){
             ProfileWidget.showProfile(response.data);
-            man.setMessage(response.success, 'Счёт успешно пополнен на ${data.amount} ${data.currency}');
+            moneymanagers.setMessage(response.success, `Счёт успешно пополнен на ${data.amount} ${data.currency}`);
+        }
+        else{
+            moneymanagers.setMessage(response.success, response.error);
         }
     });
 }
-man.conversionMoneyCallback = (data)=>{
+moneymanagers.conversionMoneyCallback = (data)=>{
     ApiConnector.convertMoney(data, (response)=>{
         if(response.success){
-            ProfileWidget.showProfile(response.data)
+            ProfileWidget.showProfile(response.data);
+            moneymanagers.setMessage(response.success, `Конвертирована валюта`);
         }
         else {
-            man.setMessage(response.success, response.error);
+            moneymanagers.setMessage(response.success, response.error);
         }
     })
 }
-man.sendMoneyCallback = (data) =>{
+moneymanagers.sendMoneyCallback = (data) =>{
     ApiConnector.transferMoney(data,  (response) =>{
         if(response.success){
             ProfileWidget.showProfile(response.data);
-            man.setMessage(response.success, `Перевод завершен ${data.amount} ${data.currency}`);
+            moneymanagers.setMessage(response.success, `Перевод завершен ${data.amount} ${data.currency}`);
         }
         else {
-            man.setMessage(response.success, response.error);
+            moneymanagers.setMessage(response.success, response.error);
         }
     })
 }
@@ -68,7 +72,7 @@ ApiConnector.getFavorites (response =>{
         console.log(response);
         Favorites.clearTable();
         Favorites.fillTable(response.data);
-        man.updateUsersList(response.data);
+        moneymanagers.updateUsersList(response.data);
     }
 });
 Favorites.addUserCallback = (data) =>{
@@ -76,10 +80,11 @@ Favorites.addUserCallback = (data) =>{
         if(response.success){
             Favorites.clearTable();
             Favorites.fillTable(response.data);
-            man.updateUsersList(response.data);
+            moneymanagers.updateUsersList(response.data);
+            Favorites.setMessage(response.success, `Пользователь ${data.name} добавлен в избранные`);
         }
         else {
-            man.setMessage(response.success, response.error);
+            moneymanagers.setMessage(response.success, response.error);
         }
     })
 }
@@ -89,10 +94,12 @@ Favorites.removeUserCallback = (data) =>{
         if(response.success){
             Favorites.clearTable();
             Favorites.fillTable(response.data);
-            man.updateUsersList(response.data);
+            moneymanagers.updateUsersList(response.data);
+            Favorites.setMessage(response.success, `Пользователь c ID ${data} удален из избранных`);
+            console.log(data);
         }
         else {
-            man.setMessage(response.success, response.error);
+            moneymanagers.setMessage(response.success, response.error);
         }
     })
 }
